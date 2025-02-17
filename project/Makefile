@@ -26,13 +26,13 @@ down:
 ## build_broker: builds the broker binary as a linux executable
 build_broker:
 	@echo Building broker binary...
-	chdir ..\broker-service && set GOOS=windows&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${BROKER_BINARY} ./cmd/api
+	chdir ..\broker-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${BROKER_BINARY} ./cmd/api
 	@echo Done!
 
 ## build_auth: builds the auth binary as a linux executable
 build_auth:
 	@echo Building auth binary...
-	chdir ..\authentication-service && set GOOS=windows&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${AUTH_BINARY} ./cmd/api
+	chdir ..\authentication-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -a -installsuffix cgo -o ${AUTH_BINARY} ./cmd/api
 	@echo Done!
 ## build_front: builds the frone end binary
 build_front:
@@ -48,5 +48,5 @@ start: build_front
 ## stop: stop the front end
 stop:
 	@echo Stopping front end...
-	@-taskkill /IM "${FRONT_END_BINARY}" /F
+	@taskkill /IM "${FRONT_END_BINARY}" /F
 	@echo "Stopped front end!"
