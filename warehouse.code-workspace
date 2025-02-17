@@ -11,6 +11,12 @@
         },
         {
             "path": "authentication-service"
+        },
+        {
+            "path": "product-service"
+        },
+        {
+            "path": "order-service"
         }
     ]
 }
