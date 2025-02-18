@@ -7,10 +7,10 @@ import (
 )
 
 type JSONPayload struct {
-	ClientID    string           `json:"client_id"`
+	ClientID    int32           `json:"client_id"`
 	OrderDate   time.Time        `json:"order_date"`
 	Status      string           `json:"status"`
-	TotalAmount float32          `json:"total_amount"`
+	TotalPrice float32          `json:"total_price"`
 	Items       []data.OrderItem `json:"items"`
 }
 
@@ -20,15 +20,15 @@ func (app *Config) WriteOrder(w http.ResponseWriter, r *http.Request) {
 	_ = app.readJSON(w, r, &requestPayload)
 
 	// insert data
-	event := data.OrderEntry{
+	entry := data.OrderEntry{
 		ClientID:    requestPayload.ClientID,
 		OrderDate:   requestPayload.OrderDate,
 		Status:      requestPayload.Status,
-		TotalAmount: requestPayload.TotalAmount,
+		TotalPrice: requestPayload.TotalPrice,
 		Items:       requestPayload.Items,
 	}
 
-	err := app.Models.OrderEntry.Insert(event)
+	err := app.Models.OrderEntry.Insert(entry)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -36,7 +36,7 @@ func (app *Config) WriteOrder(w http.ResponseWriter, r *http.Request) {
 
 	resp := jsonResponse{
 		Error:   false,
-		Message: "logged",
+		Message: "oreder added",
 	}
 
 	app.writeJSON(w, http.StatusAccepted, resp)

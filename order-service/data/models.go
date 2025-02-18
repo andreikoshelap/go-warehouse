@@ -35,10 +35,10 @@ type OrderItem struct {
 
 type OrderEntry struct {
     ID          string      `bson:"_id,omitempty" json:"id,omitempty"`
-    ClientID    string      `bson:"client_id,omitempty" json:"client_id,omitempty"`
+    ClientID    int32       `bson:"client_id,omitempty" json:"client_id,omitempty"`
     OrderDate   time.Time   `bson:"order_date" json:"order_date"`
     Status      string      `bson:"status" json:"status"`
-    TotalAmount float32     `bson:"total_amount" json:"total_amount"`
+    TotalPrice  float32     `bson:"total_price" json:"total_price"`
     Items       []OrderItem `bson:"items" json:"items"`
     CreatedAt   time.Time   `bson:"created_at" json:"created_at"`
     UpdatedAt   time.Time   `bson:"updated_at" json:"updated_at"`
@@ -52,7 +52,7 @@ func (l *OrderEntry) Insert(entry OrderEntry) error {
 		ClientID: entry.ClientID,
 		OrderDate: entry.OrderDate,
 		Status: entry.Status,
-		TotalAmount: entry.TotalAmount,
+		TotalPrice: entry.TotalPrice,
 		Items: entry.Items,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -150,7 +150,7 @@ func (l *OrderEntry) Update() (*mongo.UpdateResult, error) {
 				{"client_id", l.ClientID},
 				{"order_date", l.OrderDate},
 				{"status", l.Status},
-				{"total_amount", l.TotalAmount},
+				{"total_price", l.TotalPrice},
 				{"items", l.Items},
 				{"updated_at", time.Now()},
 			}},

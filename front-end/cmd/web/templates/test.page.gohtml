@@ -84,14 +84,27 @@
 
     orderBrokerBtn.addEventListener("click", function () {
 
+        const productItem1 = {
+            product_id: "1",
+            product_name: "Notebook",
+            product_price: 1200,
+            quantity: 1,
+        }
+        const productItem2 = {
+            product_id: "2",	
+            product_name: "Monitor",
+            product_price: 250,
+            quantity: 1,
+        }
+
         const payload = {
             action: "order",
             order: {
-                id: 1,
-                product_id: 1,
-                quantity: 2,
-                total: 2400,
+                client_id: 1,
+                total_price: 1450,
                 status: "pending",
+                order_date: "2021-01-01",
+                items: [productItem1, productItem2],
             }
         }
 

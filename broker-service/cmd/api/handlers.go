@@ -8,10 +8,10 @@ import (
 )
 
 type RequestPayload struct {
-	Action string      `json:"action"`
-	Auth   AuthPayload `json:"auth,omitempty"`
+	Action  string         `json:"action"`
+	Auth    AuthPayload    `json:"auth,omitempty"`
 	Product ProductPayload `json:"product,omitempty"`
-	Order   OrderPayload `json:"order,omitempty"`
+	Order   OrderPayload   `json:"order,omitempty"`
 }
 
 type AuthPayload struct {
@@ -20,27 +20,27 @@ type AuthPayload struct {
 }
 
 type ProductPayload struct {
-	Name    string `json:"name"`
-	Description	 string `json:"description"`
-	Price   float32 `json:"price"`
-	Stock   int     `json:"stock"`
-	Category string  `json:"category"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float32 `json:"price"`
+	Stock       int     `json:"stock"`
+	Category    string  `json:"category"`
 }
 
 type OrderItemPayload struct {
-	ProductID    string `json:"name"`
-	ProductName		 string `json:"product_name"`
+	ProductID    string  `json:"name"`
+	ProductName  string  `json:"product_name"`
 	ProductPrice float32 `json:"product_price"`
-	Quantity     int     `json:"quantity"`
+	Quantity     int16    `json:"quantity"`
 }
 
 type OrderPayload struct {
-	ClientID	  string `json:"client_id"`
-	OrderDate	 string `json:"order_date"`
-	Status		  string `json:"status"`
-	TotalAmount float32 `json:"total_amount"`
+	ClientID    int32             `json:"client_id"`
+	OrderDate   string             `json:"order_date"`
+	ProductID   int64             `json:"product_id"`
+	Status      string             `json:"status"`
+	TotalPrice  float32            `json:"total_price"`
 	Items       []OrderItemPayload `json:"items"`
-	Password string `json:"password"`
 }
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
@@ -103,14 +103,12 @@ func (app *Config) addProduct(w http.ResponseWriter, entry ProductPayload) {
 	// create a varabiel we'll read response.Body into
 	var jsonFromService jsonResponse
 
-	// // decode the json from the product service
-	// err = json.NewDecoder(response.Body).Decode(&jsonFromService)
-	// if err != nil {
-	// 	app.errorJSON(w, err)
-	// 	return
-	// }
-	jsonFromService.Error = false
-	jsonFromService.Message = "Product added!"
+	// decode the json from the product service
+	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 
 	app.writeJSON(w, http.StatusAccepted, jsonFromService)
 }

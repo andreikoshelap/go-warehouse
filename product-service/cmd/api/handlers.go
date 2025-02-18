@@ -35,7 +35,7 @@ func (app *Config) WriteProduct(w http.ResponseWriter, r *http.Request) {
 
 	resp := jsonResponse{
 		Error:   false,
-		Message: "logged",
+		Message: "product added",
 	}
 
 	app.writeJSON(w, http.StatusAccepted, resp)
