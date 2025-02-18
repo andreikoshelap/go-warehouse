@@ -26,19 +26,25 @@ type Models struct {
 }
 
 type ProductEntry struct {
-	ID        string    `bson:"_id,omitempty" json:"id,omitempty"`
-	Name      string    `bson:"name" json:"name"`
-	Data      string    `bson:"data" json:"data"`
-	CreatedAt time.Time `bson:"created_at" json:"created_at"`
-	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
+	ID          string    `bson:"_id,omitempty" json:"id,omitempty"`
+	Name        string    `bson:"name" json:"name"`
+	Description string    `bson:"description" json:"description"`
+	Price       float32   `bson:"price" json:"price"`
+	Stock       int       `bson:"stock" json:"stock"`
+	Category    string    `bson:"category" json:"category"`
+	CreatedAt   time.Time `bson:"created_at" json:"created_at"`
+	UpdatedAt   time.Time `bson:"updated_at" json:"updated_at"`
 }
 
 func (l *ProductEntry) Insert(entry ProductEntry) error {
 	collection := client.Database("warehouse").Collection("products")
 
 	_, err := collection.InsertOne(context.TODO(), ProductEntry{
-		Name: entry.Name,
-		Data: entry.Data,
+		Name:      entry.Name,
+		Description:      entry.Description,
+		Price:     entry.Price,
+		Stock:     entry.Stock,
+		Category:  entry.Category,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
@@ -133,7 +139,10 @@ func (l *ProductEntry) Update() (*mongo.UpdateResult, error) {
 		bson.D{
 			{"$set", bson.D{
 				{"name", l.Name},
-				{"data", l.Data},
+				{"description", l.Description},
+				{"price", l.Price},
+				{"stock", l.Stock},
+				{"category", l.Category},
 				{"updated_at", time.Now()},
 			}},
 		},

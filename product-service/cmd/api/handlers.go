@@ -1,13 +1,16 @@
 package main
 
 import (
-	"product-service/data"
 	"net/http"
+	"product-service/data"
 )
 
 type JSONPayload struct {
-	Name string `json:"name"`
-	Data string `json:"data"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float32 `json:"price"`
+	Stock       int     `json:"stock"`
+	Category    string  `json:"category"`
 }
 
 func (app *Config) WriteProduct(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +20,11 @@ func (app *Config) WriteProduct(w http.ResponseWriter, r *http.Request) {
 
 	// insert data
 	event := data.ProductEntry{
-		Name: requestPayload.Name,
-		Data: requestPayload.Data,
+		Name:        requestPayload.Name,
+		Description: requestPayload.Description,
+		Price:       requestPayload.Price,
+		Stock:       requestPayload.Stock,
+		Category:    requestPayload.Category,
 	}
 
 	err := app.Models.ProductEntry.Insert(event)
@@ -28,7 +34,7 @@ func (app *Config) WriteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := jsonResponse{
-		Error: false,
+		Error:   false,
 		Message: "logged",
 	}
 

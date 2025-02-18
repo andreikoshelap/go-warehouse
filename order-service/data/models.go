@@ -25,20 +25,35 @@ type Models struct {
 	OrderEntry OrderEntry
 }
 
-type OrderEntry struct {
-	ID        string    `bson:"_id,omitempty" json:"id,omitempty"`
-	Name      string    `bson:"name" json:"name"`
-	Data      string    `bson:"data" json:"data"`
-	CreatedAt time.Time `bson:"created_at" json:"created_at"`
-	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
+type OrderItem struct {
+    ProductID    string  `bson:"product_id" json:"product_id"`
+    ProductName  string  `bson:"product_name" json:"product_name"`
+    ProductPrice float32 `bson:"product_price" json:"product_price"`
+    Quantity     int     `bson:"quantity" json:"quantity"`
 }
+
+
+type OrderEntry struct {
+    ID          string      `bson:"_id,omitempty" json:"id,omitempty"`
+    ClientID    string      `bson:"client_id,omitempty" json:"client_id,omitempty"`
+    OrderDate   time.Time   `bson:"order_date" json:"order_date"`
+    Status      string      `bson:"status" json:"status"`
+    TotalAmount float32     `bson:"total_amount" json:"total_amount"`
+    Items       []OrderItem `bson:"items" json:"items"`
+    CreatedAt   time.Time   `bson:"created_at" json:"created_at"`
+    UpdatedAt   time.Time   `bson:"updated_at" json:"updated_at"`
+}
+
 
 func (l *OrderEntry) Insert(entry OrderEntry) error {
 	collection := client.Database("warehouse").Collection("orders")
 
 	_, err := collection.InsertOne(context.TODO(), OrderEntry{
-		Name: entry.Name,
-		Data: entry.Data,
+		ClientID: entry.ClientID,
+		OrderDate: entry.OrderDate,
+		Status: entry.Status,
+		TotalAmount: entry.TotalAmount,
+		Items: entry.Items,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
@@ -132,8 +147,11 @@ func (l *OrderEntry) Update() (*mongo.UpdateResult, error) {
 		bson.M{"_id": docID},
 		bson.D{
 			{"$set", bson.D{
-				{"name", l.Name},
-				{"data", l.Data},
+				{"client_id", l.ClientID},
+				{"order_date", l.OrderDate},
+				{"status", l.Status},
+				{"total_amount", l.TotalAmount},
+				{"items", l.Items},
 				{"updated_at", time.Now()},
 			}},
 		},

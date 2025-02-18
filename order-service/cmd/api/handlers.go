@@ -1,13 +1,17 @@
 package main
 
 import (
-	"order-service/data"
 	"net/http"
+	"order-service/data"
+	"time"
 )
 
 type JSONPayload struct {
-	Name string `json:"name"`
-	Data string `json:"data"`
+	ClientID    string           `json:"client_id"`
+	OrderDate   time.Time        `json:"order_date"`
+	Status      string           `json:"status"`
+	TotalAmount float32          `json:"total_amount"`
+	Items       []data.OrderItem `json:"items"`
 }
 
 func (app *Config) WriteOrder(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +21,11 @@ func (app *Config) WriteOrder(w http.ResponseWriter, r *http.Request) {
 
 	// insert data
 	event := data.OrderEntry{
-		Name: requestPayload.Name,
-		Data: requestPayload.Data,
+		ClientID:    requestPayload.ClientID,
+		OrderDate:   requestPayload.OrderDate,
+		Status:      requestPayload.Status,
+		TotalAmount: requestPayload.TotalAmount,
+		Items:       requestPayload.Items,
 	}
 
 	err := app.Models.OrderEntry.Insert(event)
@@ -28,7 +35,7 @@ func (app *Config) WriteOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := jsonResponse{
-		Error: false,
+		Error:   false,
 		Message: "logged",
 	}
 
