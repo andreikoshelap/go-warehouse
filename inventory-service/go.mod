@@ -1,4 +1,4 @@
-module product-service
+module inventory-service
 
 go 1.24
 

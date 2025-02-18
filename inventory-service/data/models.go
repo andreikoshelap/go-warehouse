@@ -17,15 +17,15 @@ func New(mongo *mongo.Client) Models {
 	client = mongo
 
 	return Models{
-		ProductEntry: ProductEntry{},
+		InventoryItemEntry: InventoryItemEntry{},
 	}
 }
 
 type Models struct {
-	ProductEntry ProductEntry
+	InventoryItemEntry InventoryItemEntry
 }
 
-type ProductEntry struct {
+type InventoryItemEntry struct {
 	ID          string    `bson:"_id,omitempty" json:"id,omitempty"`
 	Name        string    `bson:"name" json:"name"`
 	Description string    `bson:"description" json:"description"`
@@ -36,10 +36,10 @@ type ProductEntry struct {
 	UpdatedAt   time.Time `bson:"updated_at" json:"updated_at"`
 }
 
-func (l *ProductEntry) Insert(entry ProductEntry) error {
-	collection := client.Database("warehouse").Collection("products")
+func (l *InventoryItemEntry) Insert(entry InventoryItemEntry) error {
+	collection := client.Database("warehouse").Collection("inventory")
 
-	_, err := collection.InsertOne(context.TODO(), ProductEntry{
+	_, err := collection.InsertOne(context.TODO(), InventoryItemEntry{
 		Name:      entry.Name,
 		Description:      entry.Description,
 		Price:     entry.Price,
@@ -49,18 +49,18 @@ func (l *ProductEntry) Insert(entry ProductEntry) error {
 		UpdatedAt: time.Now(),
 	})
 	if err != nil {
-		log.Println("Error inserting into products:", err)
+		log.Println("Error inserting into inventory:", err)
 		return err
 	}
 
 	return nil
 }
 
-func (l *ProductEntry) All() ([]*ProductEntry, error) {
+func (l *InventoryItemEntry) All() ([]*InventoryItemEntry, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	collection := client.Database("warehouse").Collection("products")
+	collection := client.Database("warehouse").Collection("inventory")
 
 	opts := options.Find()
 	opts.SetSort(bson.D{{"created_at", -1}})
@@ -72,10 +72,10 @@ func (l *ProductEntry) All() ([]*ProductEntry, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var logs []*ProductEntry
+	var logs []*InventoryItemEntry
 
 	for cursor.Next(ctx) {
-		var item ProductEntry
+		var item InventoryItemEntry
 
 		err := cursor.Decode(&item)
 		if err != nil {
@@ -89,18 +89,18 @@ func (l *ProductEntry) All() ([]*ProductEntry, error) {
 	return logs, nil
 }
 
-func (l *ProductEntry) GetOne(id string) (*ProductEntry, error) {
+func (l *InventoryItemEntry) GetOne(id string) (*InventoryItemEntry, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	collection := client.Database("warehouse").Collection("products")
+	collection := client.Database("warehouse").Collection("inventory")
 
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
 
-	var entry ProductEntry
+	var entry InventoryItemEntry
 	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&entry)
 	if err != nil {
 		return nil, err
@@ -109,11 +109,11 @@ func (l *ProductEntry) GetOne(id string) (*ProductEntry, error) {
 	return &entry, nil
 }
 
-func (l *ProductEntry) DropCollection() error {
+func (l *InventoryItemEntry) DropCollection() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	collection := client.Database("warehouse").Collection("products")
+	collection := client.Database("warehouse").Collection("inventory")
 
 	if err := collection.Drop(ctx); err != nil {
 		return err
@@ -122,11 +122,11 @@ func (l *ProductEntry) DropCollection() error {
 	return nil
 }
 
-func (l *ProductEntry) Update() (*mongo.UpdateResult, error) {
+func (l *InventoryItemEntry) Update() (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	collection := client.Database("warehouse").Collection("products")
+	collection := client.Database("warehouse").Collection("inventory")
 
 	docID, err := primitive.ObjectIDFromHex(l.ID)
 	if err != nil {

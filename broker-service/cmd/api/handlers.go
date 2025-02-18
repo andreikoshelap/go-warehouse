@@ -8,10 +8,10 @@ import (
 )
 
 type RequestPayload struct {
-	Action  string         `json:"action"`
-	Auth    AuthPayload    `json:"auth,omitempty"`
-	Product ProductPayload `json:"product,omitempty"`
-	Order   OrderPayload   `json:"order,omitempty"`
+	Action    string           `json:"action"`
+	Auth      AuthPayload      `json:"auth,omitempty"`
+	Inventory InventoryPayload `json:"inventory,omitempty"`
+	Order     OrderPayload     `json:"order,omitempty"`
 }
 
 type AuthPayload struct {
@@ -19,7 +19,7 @@ type AuthPayload struct {
 	Password string `json:"password"`
 }
 
-type ProductPayload struct {
+type InventoryPayload struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Price       float32 `json:"price"`
@@ -28,19 +28,18 @@ type ProductPayload struct {
 }
 
 type OrderItemPayload struct {
-	ProductID    string  `json:"name"`
-	ProductName  string  `json:"product_name"`
-	ProductPrice float32 `json:"product_price"`
-	Quantity     int16    `json:"quantity"`
+	ItemID    string  `json:"item_id"`
+	ItemName  string  `json:"item_name"`
+	ItemPrice float32 `json:"item_price"`
+	Quantity  int16   `json:"quantity"`
 }
 
 type OrderPayload struct {
-	ClientID    int32             `json:"client_id"`
-	OrderDate   string             `json:"order_date"`
-	ProductID   int64             `json:"product_id"`
-	Status      string             `json:"status"`
-	TotalPrice  float32            `json:"total_price"`
-	Items       []OrderItemPayload `json:"items"`
+	ClientID   int32              `json:"client_id"`
+	OrderDate  string             `json:"order_date"`
+	Status     string             `json:"status"`
+	TotalPrice float32            `json:"total_price"`
+	Items      []OrderItemPayload `json:"items"`
 }
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
@@ -64,8 +63,8 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	switch requestPayload.Action {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
-	case "product":
-		app.addProduct(w, requestPayload.Product)
+	case "inventory":
+		app.addItem(w, requestPayload.Inventory)
 	case "order":
 		app.addOrder(w, requestPayload.Order)
 	default:
@@ -73,12 +72,12 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *Config) addProduct(w http.ResponseWriter, entry ProductPayload) {
-	// create some json we'll send to the product microservice
+func (app *Config) addItem(w http.ResponseWriter, entry InventoryPayload) {
+	// create some json we'll send to the inventory microservice
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
 	// call the service
-	request, err := http.NewRequest("POST", "http://product-service/product", bytes.NewBuffer(jsonData))
+	request, err := http.NewRequest("POST", "http://inventory-service/inventory", bytes.NewBuffer(jsonData))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -96,14 +95,14 @@ func (app *Config) addProduct(w http.ResponseWriter, entry ProductPayload) {
 
 	// make sure we get back the correct status code
 	if response.StatusCode != http.StatusAccepted {
-		app.errorJSON(w, errors.New("error calling product service"))
+		app.errorJSON(w, errors.New("error calling inventory service"))
 		return
 	}
 
 	// create a varabiel we'll read response.Body into
 	var jsonFromService jsonResponse
 
-	// decode the json from the product service
+	// decode the json from the inventory service
 	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
 	if err != nil {
 		app.errorJSON(w, err)

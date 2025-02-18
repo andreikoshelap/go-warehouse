@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"product-service/data"
+	"inventory-service/data"
 	"net/http"
 	"time"
 

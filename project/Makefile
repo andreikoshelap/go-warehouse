@@ -2,7 +2,7 @@ SHELL=cmd.exe
 FRONT_END_BINARY=frontApp.exe
 BROKER_BINARY=brokerApp
 AUTH_BINARY=authApp
-PRODUCT_BINARY=productServiceApp
+INVENTORY_BINARY=inventoryServiceApp
 ORDER_BINARY=orderServiceApp
 
 ## up: starts all containers in the background without forcing build
@@ -12,7 +12,7 @@ up:
 	@echo Docker images started!
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_broker build_auth build_product build_order
+up_build: build_broker build_auth build_inventory build_order
 	@echo Stopping docker images (if running...)
 	docker-compose down
 	@echo Building (when required) and starting docker images...
@@ -31,15 +31,15 @@ build_broker:
 	chdir ..\broker-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${BROKER_BINARY} ./cmd/api
 	@echo Done!
 
-## build_product: builds the product binary as a linux executable
-build_product:
-	@echo Building broker binary...
-	chdir ..\product-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${PRODUCT_BINARY} ./cmd/api
+## build_inventory: builds the inventory binary as a linux executable
+build_inventory:
+	@echo Building invemtory binary...
+	chdir ..\inventory-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${INVENTORY_BINARY} ./cmd/api
 	@echo Done!
 
 ## build_order builds the order binary as a linux executable
 build_order:
-	@echo Building broker binary...
+	@echo Building order binary...
 	chdir ..\order-service && set GOOS=linux&& set GOARCH=amd64&& set CGO_ENABLED=0 && go build -o ${ORDER_BINARY} ./cmd/api
 	@echo Done!
 

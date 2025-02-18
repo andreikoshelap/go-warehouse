@@ -12,10 +12,10 @@ services:
       mode: replicated
       replicas: 1
 
-  product-service:
+  inventory-service:
     build:
-      context: ./../product-service
-      dockerfile: ./../product-service/product-service.dockerfile
+      context: ./../inventory-service
+      dockerfile: ./../inventory-service/inventory-service.dockerfile
     restart: always
     deploy:
       mode: replicated

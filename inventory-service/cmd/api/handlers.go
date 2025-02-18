@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"product-service/data"
+	"inventory-service/data"
 )
 
 type JSONPayload struct {
@@ -19,7 +19,7 @@ func (app *Config) WriteProduct(w http.ResponseWriter, r *http.Request) {
 	_ = app.readJSON(w, r, &requestPayload)
 
 	// insert data
-	event := data.ProductEntry{
+	event := data.InventoryItemEntry{
 		Name:        requestPayload.Name,
 		Description: requestPayload.Description,
 		Price:       requestPayload.Price,
@@ -27,7 +27,7 @@ func (app *Config) WriteProduct(w http.ResponseWriter, r *http.Request) {
 		Category:    requestPayload.Category,
 	}
 
-	err := app.Models.ProductEntry.Insert(event)
+	err := app.Models.InventoryItemEntry.Insert(event)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -35,7 +35,7 @@ func (app *Config) WriteProduct(w http.ResponseWriter, r *http.Request) {
 
 	resp := jsonResponse{
 		Error:   false,
-		Message: "product added",
+		Message: "item added",
 	}
 
 	app.writeJSON(w, http.StatusAccepted, resp)
