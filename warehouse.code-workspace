@@ -17,6 +17,12 @@
         },
         {
             "path": "inventory-service"
+        },
+        {
+            "path": "listener-service"
         }
-    ]
+    ],
+    "settings": {
+        "git.ignoreLimitWarning": true
+    }
 }
